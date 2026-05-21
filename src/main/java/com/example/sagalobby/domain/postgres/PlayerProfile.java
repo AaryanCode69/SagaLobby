@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @Entity
@@ -19,6 +21,15 @@ public class PlayerProfile extends BaseEntity {
 
     @Column(nullable = false)
     private Integer mmr_rating;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "player_match_record",
+            joinColumns = @JoinColumn(name = "player_id"),
+            inverseJoinColumns = @JoinColumn(name = "match_id")
+    )
+    private Set<MatchRecord> matchRecords;
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

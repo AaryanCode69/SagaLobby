@@ -1,0 +1,8 @@
+package com.example.sagalobby.domain.postgres;
+
+public enum Status{
+    PENDING_ALLOCATION,
+    IN_PROGRESS,
+    COMPLETED,
+    FAILED_ROLLBACK
+}
