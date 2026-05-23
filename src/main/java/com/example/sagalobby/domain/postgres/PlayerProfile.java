@@ -21,6 +21,7 @@ public class PlayerProfile extends BaseEntity {
     private Integer mmr_rating;
 
     @Setter(AccessLevel.NONE)
+    @ManyToMany()
     @JoinTable(
             name = "player_match_record",
             joinColumns = @JoinColumn(name = "player_id"),

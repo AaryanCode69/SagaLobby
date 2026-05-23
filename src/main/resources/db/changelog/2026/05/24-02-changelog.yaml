@@ -1,0 +1,131 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1779567367529-1
+      author: aaryan_dev
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_match_record
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  constraints:
+                    nullable: false
+                  name: updated_at
+                  type: DATETIME
+              - column:
+                  name: version
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: status
+                  type: VARCHAR(255)
+            tableName: match_record
+  - changeSet:
+      id: 1779567367529-2
+      author: aaryan_dev
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_player_match_record
+                  name: match_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_player_match_record
+                  name: player_id
+                  type: UUID
+            tableName: player_match_record
+  - changeSet:
+      id: 1779567367529-3
+      author: aaryan_dev
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_player_profile
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  constraints:
+                    nullable: false
+                  name: updated_at
+                  type: DATETIME
+              - column:
+                  name: version
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: username
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: mmr_rating
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: region
+                  type: VARCHAR(255)
+            tableName: player_profile
+  - changeSet:
+      id: 1779567367529-4
+      author: aaryan_dev
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addUniqueConstraint:
+            columnNames: username
+            constraintName: uc_player_profile_username
+            tableName: player_profile
+  - changeSet:
+      id: 1779567367529-5
+      author: aaryan_dev
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: match_id
+            baseTableName: player_match_record
+            constraintName: fk_plamatrec_on_match_record
+            referencedColumnNames: id
+            referencedTableName: match_record
+  - changeSet:
+      id: 1779567367529-6
+      author: aaryan_dev
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: player_id
+            baseTableName: player_match_record
+            constraintName: fk_plamatrec_on_player_profile
+            referencedColumnNames: id
+            referencedTableName: player_profile
+
