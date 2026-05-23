@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -18,7 +19,7 @@ import java.util.Set;
 public class MatchRecord extends BaseEntity {
 
     @ManyToMany(mappedBy = "matchRecords")
-    private Set<PlayerProfile> playerProfiles;
+    private Set<PlayerProfile> playerProfiles = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
