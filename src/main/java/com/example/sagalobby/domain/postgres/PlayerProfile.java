@@ -18,7 +18,7 @@ public class PlayerProfile extends BaseEntity {
     private String username;
 
     @Column(nullable = false)
-    private Integer mmr_rating;
+    private Integer mmrRating;
 
     @Setter(AccessLevel.NONE)
     @ManyToMany()
