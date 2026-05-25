@@ -1,4 +1,4 @@
-package com.example.sagalobby.domain.postgres;
+package com.example.sagalobby.domain.postgres.playerprofile;
 
 public enum Region {
     ASIA,

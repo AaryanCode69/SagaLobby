@@ -1,6 +1,7 @@
-package com.example.sagalobby.domain.postgres;
+package com.example.sagalobby.domain.postgres.playerprofile;
 
 import com.example.sagalobby.common.BaseEntity;
+import com.example.sagalobby.domain.postgres.matchrecord.MatchRecord;
 import jakarta.persistence.*;
 import lombok.*;
 

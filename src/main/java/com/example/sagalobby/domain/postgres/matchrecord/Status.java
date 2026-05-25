@@ -1,4 +1,4 @@
-package com.example.sagalobby.domain.postgres;
+package com.example.sagalobby.domain.postgres.matchrecord;
 
 public enum Status{
     PENDING_ALLOCATION,
