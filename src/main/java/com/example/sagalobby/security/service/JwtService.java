@@ -3,43 +3,40 @@ package com.example.sagalobby.security.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import lombok.NoArgsConstructor;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Service
-@NoArgsConstructor
+@Slf4j
 public class JwtService {
+
+    private static final String CLAIM_USER_METADATA = "user_metadata";
+    private static final String META_NAME = "name";
+    private static final String META_ROLE = "role";
+    private static final String SUPABASE_AUDIENCE = "authenticated";
 
     @Value("${supabase.jwt.secret}")
     private String secret;
 
+    @Value("${supabase.url}")
+    private String supabaseUrl;
 
-    public String extractPersonId(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
+    private Key signingKey;
 
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-    public Boolean validateToken(String token) {
-        try {
-            boolean result = !isTokenExpired(token);
-            return result;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    @PostConstruct
+    public void init() {
+        // Cache the signing key exactly once at startup to save CPU cycles
+        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+        this.signingKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -47,17 +44,31 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSignKey())
+
+    public Claims getValidatedClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(this.signingKey)
+                .requireAudience("authenticated")
+                .requireIssuer(supabaseUrl)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return claims;
     }
 
-    private Key getSignKey() {
-        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
-        return Keys.hmacShaKeyFor(keyBytes);
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(this.signingKey)
+                .requireAudience(SUPABASE_AUDIENCE)
+                .requireIssuer(supabaseUrl)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public String extractMetadataField(Claims claims, String fieldName) {
+        return Optional.ofNullable(claims.get(CLAIM_USER_METADATA, Map.class))
+                .map(meta -> meta.get(fieldName))
+                .map(Object::toString)
+                .orElse(null);
     }
 }
