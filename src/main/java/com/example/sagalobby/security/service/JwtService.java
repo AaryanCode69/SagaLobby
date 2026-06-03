@@ -1,74 +1,52 @@
 package com.example.sagalobby.security.service;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
+import com.auth0.jwk.JwkException;
+import com.auth0.jwk.JwkProvider;
+import com.auth0.jwk.UrlJwkProvider;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.util.Date;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.interfaces.ECPublicKey;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
+
 
 @Service
 @Slf4j
 public class JwtService {
 
-    private static final String CLAIM_USER_METADATA = "user_metadata";
-    private static final String META_NAME = "name";
-    private static final String META_ROLE = "role";
-    private static final String SUPABASE_AUDIENCE = "authenticated";
-
-    @Value("${supabase.jwt.secret}")
-    private String secret;
-
     @Value("${supabase.url}")
     private String supabaseUrl;
 
-    private Key signingKey;
+    @Value("${supabase.jwt.url}")
+    private String jwksProvider;
 
-    @PostConstruct
-    public void init() {
-        // Cache the signing key exactly once at startup to save CPU cycles
-        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
-        this.signingKey = Keys.hmacShaKeyFor(keyBytes);
-    }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+    JwkProvider provider = new UrlJwkProvider( new URL(jwksProvider));
+
+    public JwtService() throws MalformedURLException {
     }
 
 
-    public Claims getValidatedClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(this.signingKey)
-                .requireAudience("authenticated")
-                .requireIssuer(supabaseUrl)
+    public Map<String, Claim> verifySupabaseToken(String token) throws JwkException {
+        DecodedJWT unverifedjwt = JWT.decode(token);
+        String kid = unverifedjwt.getKeyId();
+
+        ECPublicKey publicKey = (ECPublicKey) provider.get(kid).getPublicKey();
+
+        Algorithm algorithm = Algorithm.ECDSA256(publicKey,null);
+
+        DecodedJWT verifiedjwt = JWT.require(algorithm)
+                .withIssuer(supabaseUrl + "/auth/v1")
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
+                .verify(unverifedjwt);
 
-    private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(this.signingKey)
-                .requireAudience(SUPABASE_AUDIENCE)
-                .requireIssuer(supabaseUrl)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    public String extractMetadataField(Claims claims, String fieldName) {
-        return Optional.ofNullable(claims.get(CLAIM_USER_METADATA, Map.class))
-                .map(meta -> meta.get(fieldName))
-                .map(Object::toString)
-                .orElse(null);
+        return verifiedjwt.getClaims();
     }
 }

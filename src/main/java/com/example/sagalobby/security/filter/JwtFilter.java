@@ -1,5 +1,6 @@
 package com.example.sagalobby.security.filter;
 
+import com.auth0.jwt.interfaces.Claim;
 import com.example.sagalobby.security.service.JwtService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -48,11 +49,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if(SecurityContextHolder.getContext().getAuthentication() == null){
             try {
-                Claims claims = jwtService.getValidatedClaims(token);
-
-                String personId = claims.getSubject();
-                String personName = jwtService.extractMetadataField(claims, "name");
-                String personRole = jwtService.extractMetadataField(claims, "role");
+                Map<String, Claim> claims = jwtService.verifySupabaseToken(token);
+                Claim subClaim = claims.get("sub");
+                String personId = subClaim.asString();
+                Claim user_metadataClaim = claims.get("user_metadata");
+                Map<String, Object> user_metadata = user_metadataClaim.asMap();
+                String personName = (String) user_metadata.get("name");
+                String personRole = (String ) user_metadata.get("role");
 
                 personName = personName!=null ?  personName : "Unknown";
                 personRole = personRole!=null ? personRole : "USER";

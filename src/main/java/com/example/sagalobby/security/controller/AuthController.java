@@ -1,5 +1,7 @@
 package com.example.sagalobby.security.controller;
 
+import com.auth0.jwk.JwkException;
+import com.auth0.jwt.interfaces.Claim;
 import com.example.sagalobby.security.service.JwtService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -20,16 +22,15 @@ public class AuthController {
     private final JwtService jwtService;
 
     @PostMapping("/validate")
-    public ResponseEntity<?> validateToken (@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> validateToken (@RequestHeader("Authorization") String authHeader) throws JwkException {
         String token = authHeader.substring(7);
-        Claims claims = jwtService.getValidatedClaims(token);
-
-        String personId = claims.getSubject();
-        String personName = jwtService.extractMetadataField(claims, "name");
-        String personRole = jwtService.extractMetadataField(claims, "role");
-
-        personName = personName!=null ?  personName : "Unknown";
-        personRole = personRole!=null ? personRole : "USER";
+        Map<String, Claim> claims = jwtService.verifySupabaseToken(token);
+        Claim subClaim = claims.get("sub");
+        String personId = subClaim.asString();
+        Claim user_metadataClaim = claims.get("user_metadata");
+        Map<String, Object> user_metadata = user_metadataClaim.asMap();
+        String personName = (String) user_metadata.get("name");
+        String personRole = (String ) user_metadata.get("role");
 
         Map<String, Object> response = new HashMap<>();
         response.put("valid", true);

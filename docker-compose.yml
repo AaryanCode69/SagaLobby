@@ -1,14 +1,6 @@
 version: '3.8'
 
 services:
-  redis:
-    image: redis:7-alpine
-    container_name: sagalobby-redis
-    ports:
-      - "6379:6379"
-    command: redis-server --save 60 1 --loglevel warning
-
-
   kafka:
     image: bitnami/kafka:3.7
     container_name: sagalobby-kafka
