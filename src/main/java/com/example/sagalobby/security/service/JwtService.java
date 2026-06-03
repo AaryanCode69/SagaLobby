@@ -2,6 +2,7 @@ package com.example.sagalobby.security.service;
 
 import com.auth0.jwk.JwkException;
 import com.auth0.jwk.JwkProvider;
+import com.auth0.jwk.JwkProviderBuilder;
 import com.auth0.jwk.UrlJwkProvider;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -15,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.interfaces.ECPublicKey;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 
 @Service
@@ -24,13 +26,14 @@ public class JwtService {
     @Value("${supabase.url}")
     private String supabaseUrl;
 
-    @Value("${supabase.jwt.url}")
-    private String jwksProvider;
+    JwkProvider provider;
 
-
-    JwkProvider provider = new UrlJwkProvider( new URL(jwksProvider));
-
-    public JwtService() throws MalformedURLException {
+    public JwtService(@Value("${supabase.jwt.url}") String jwksProviderUrl) throws MalformedURLException {
+        // I highly recommend using the builder here to enable caching!
+        this.provider = new JwkProviderBuilder(new URL(jwksProviderUrl))
+                .cached(10, 24, TimeUnit.HOURS)
+                .rateLimited(10, 1, TimeUnit.MINUTES)
+                .build();
     }
 
 
