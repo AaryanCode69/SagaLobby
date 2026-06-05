@@ -5,7 +5,6 @@ import com.example.sagalobby.domain.postgres.playerprofile.dto.request.ProfileRe
 import com.example.sagalobby.domain.postgres.playerprofile.dto.response.ProfileResponseDTO;
 import com.example.sagalobby.domain.postgres.playerprofile.repository.PlayerProfileRepository;
 import com.example.sagalobby.mapper.PlayerProfileMapper;
-import com.example.sagalobby.security.service.JwtService;
 import com.example.sagalobby.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,6 +38,6 @@ public class PlayerProfileService {
 
         playerProfile =  playerProfileRepository.save(playerProfile);
 
-        return playerProfileMapper.mapPlayerProfileToProfileResponseDTO(playerProfile);
+        return playerProfileMapper.mapPlayerProfileToProfileResponse(playerProfile);
     }
 }

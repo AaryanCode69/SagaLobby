@@ -8,6 +8,6 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface PlayerProfileMapper {
 
-    ProfileResponseDTO mapPlayerProfileToProfileResponseDTO(PlayerProfile player);
+    ProfileResponseDTO mapPlayerProfileToProfileResponse(PlayerProfile player);
 
 }
