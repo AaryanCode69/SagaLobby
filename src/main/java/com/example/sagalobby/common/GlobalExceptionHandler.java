@@ -1,5 +1,6 @@
 package com.example.sagalobby.common;
 
+import com.auth0.jwk.JwkException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -12,8 +13,8 @@ import java.time.Instant;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(JwtException.class)
-    public ResponseEntity<ErrorResponse> ExceptionHandler(JwtException exception, HttpServletRequest request){
+    @ExceptionHandler(JwkException.class)
+    public ResponseEntity<ErrorResponse> JwkExceptionHandler(JwkException exception, HttpServletRequest request){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value())
                 .body(ErrorResponse.builder()
                         .timestamp(Instant.now())

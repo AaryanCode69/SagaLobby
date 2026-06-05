@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -18,6 +19,10 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MatchRecord extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false, updatable = false)
+    private UUID id;
 
     @ManyToMany(mappedBy = "matchRecords")
     private Set<PlayerProfile> playerProfiles = new HashSet<>();

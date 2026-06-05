@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -14,12 +15,18 @@ import java.util.Set;
 @Table(name = "player_profile")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class PlayerProfile extends BaseEntity {
+
+    @Id
+    @Column(nullable = false, updatable = false)
+    private UUID id;
+
     @Column(nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false)
-    private Integer mmrRating;
+    private Integer mmrRating = 1500;
 
     @Setter(AccessLevel.NONE)
     @ManyToMany()
