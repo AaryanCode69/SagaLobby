@@ -1,5 +1,6 @@
 package com.example.sagalobby.mapper;
 
+import com.example.sagalobby.domain.postgres.matchrecord.dto.request.PlayerRecord;
 import com.example.sagalobby.domain.postgres.playerprofile.PlayerProfile;
 import com.example.sagalobby.domain.postgres.playerprofile.dto.response.ProfileResponseDTO;
 import org.mapstruct.Mapper;
@@ -9,5 +10,7 @@ import org.mapstruct.Mapper;
 public interface PlayerProfileMapper {
 
     ProfileResponseDTO mapPlayerProfileToProfileResponse(PlayerProfile player);
+
+    PlayerProfile mapPlayerRecordToPlayerProfile(PlayerRecord player);
 
 }

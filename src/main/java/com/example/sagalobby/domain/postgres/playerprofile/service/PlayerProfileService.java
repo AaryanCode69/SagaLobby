@@ -8,6 +8,7 @@ import com.example.sagalobby.mapper.PlayerProfileMapper;
 import com.example.sagalobby.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -21,6 +22,7 @@ public class PlayerProfileService {
 
     private final PlayerProfileMapper playerProfileMapper;
 
+    @Transactional
     public ProfileResponseDTO registerUser(ProfileRequestDTO profileRequestDTO) {
         UUID id = securityUtils.getCurrentUser();
 
