@@ -3,7 +3,9 @@ package com.example.sagalobby.domain.postgres.matchrecord.controller;
 import com.example.sagalobby.domain.postgres.matchrecord.dto.request.CreateMatchDTO;
 import com.example.sagalobby.domain.postgres.matchrecord.dto.response.CreateMatchResponseDTO;
 import com.example.sagalobby.domain.postgres.matchrecord.service.MatchRecordService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,8 +20,8 @@ public class MatchRecordController {
     private final MatchRecordService matchRecordService;
 
     @PostMapping("/join")
-    public ResponseEntity<CreateMatchResponseDTO> createMatch(@RequestBody()CreateMatchDTO request){
+    public ResponseEntity<CreateMatchResponseDTO> createMatch(@RequestBody @Valid CreateMatchDTO request){
         CreateMatchResponseDTO response = matchRecordService.joinMatch(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

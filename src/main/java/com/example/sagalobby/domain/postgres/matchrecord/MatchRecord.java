@@ -24,10 +24,15 @@ public class MatchRecord extends BaseEntity {
     @Column(nullable = false, updatable = false)
     private UUID id;
 
-    @ManyToMany(mappedBy = "matchRecords")
+    @ManyToMany(mappedBy = "matchRecords",cascade = CascadeType.MERGE)
     private Set<PlayerProfile> playerProfiles = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
+
+    public void addPlayerProfile(PlayerProfile profile) {
+        this.playerProfiles.add(profile);
+        profile.getMatchRecords().add(this);
+    }
 }
